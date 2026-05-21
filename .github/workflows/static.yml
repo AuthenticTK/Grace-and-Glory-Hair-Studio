@@ -22,15 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6 # Updated from v4
+        uses: actions/checkout@v6
 
       - name: Setup Pages
-        uses: actions/configure-pages@v6 # Updated from v5
+        uses: actions/configure-pages@v6
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.0 # Patched version targeting newer Node runtimes
+      # FIX: Use the specific Pages upload action and point it to 'public'
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: 'public' # Points directly to your public folder
+          path: 'public' 
 
       - name: Deploy to GitHub Pages
         id: deployment
