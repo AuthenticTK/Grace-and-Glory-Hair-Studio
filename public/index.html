@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
- 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,9 +98,30 @@
                 <a href="/about.html" class="hover:text-[#A25A68] transition-colors uppercase">About Us</a>
             </nav>
 
-            <button class="md:hidden relative z-10 text-[#A25A68]">
+            <button onclick="toggleMobileMenu()" class="md:hidden relative z-10 text-[#A25A68] p-2 focus:outline-none"
+                aria-label="Toggle Menu">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
+
+            <div id="mobileMenu"
+                class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+                <div
+                    class="absolute right-0 top-0 bottom-0 w-64 bg-[#FDFBF6] p-6 shadow-xl transform translate-x-full transition-transform duration-300 flex flex-col gap-6">
+                    <button onclick="toggleMobileMenu()" class="self-end text-[#A25A68]">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                    <nav class="flex flex-col gap-6 text-[14px] tracking-[0.1em] font-medium text-[#4A5568]">
+                        <a href="#services" onclick="toggleMobileMenu()"
+                            class="hover:text-[#A25A68] transition-colors uppercase">Services</a>
+                        <a href="#booking" onclick="toggleMobileMenu()"
+                            class="bg-[#B77F87] hover:bg-[#9B626A] text-white px-6 py-2.5 transition-all uppercase shadow-sm text-center">Book
+                            Now</a>
+                        <a href="#location" onclick="toggleMobileMenu()"
+                            class="hover:text-[#A25A68] transition-colors uppercase">Locations</a>
+                        <a href="/about.html" class="hover:text-[#A25A68] transition-colors uppercase">About Us</a>
+                    </nav>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -277,9 +298,9 @@
                             <select id="serviceLocation"
                                 class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm bg-white"
                                 onchange="toggleHouseCall(this.value)">
-                                <option value="Ga-Rankuwa Unit 9">Ga-Rankuwa Unit 9</option>
                                 <option value="Belgium Campus - Akasia Florenville">Belgium Campus - Akasia Florenville
                                 </option>
+                                <option value="Ga-Rankuwa Unit 9">Ga-Rankuwa Unit 9</option>
                                 <option value="House Call (Custom Location)">House Call (Custom Location)</option>
                             </select>
                         </div>
@@ -413,6 +434,20 @@
     </footer>
 
     <script>
+        // Add Mobile Menu Toggle Functions inside script tag
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const drawer = menu.querySelector('div');
+            const isHidden = menu.classList.contains('pointer-events-none');
+
+            if (isHidden) {
+                menu.classList.remove('pointer-events-none', 'opacity-0');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                menu.classList.add('pointer-events-none', 'opacity-0');
+                drawer.classList.add('translate-x-full');
+            }
+        }
         // Data Registry mapping accurately from source flyer requirements
         const catalogData = [
             { id: 'install_basic', name: 'Basic Installation', cost: 200, category: 'Installation' },
