@@ -118,7 +118,7 @@
                             Now</a>
                         <a href="#location" onclick="toggleMobileMenu()"
                             class="hover:text-[#A25A68] transition-colors uppercase">Locations</a>
-                        <a href="./about.html" class="hover:text-[#A25A68] transition-colors uppercase">About Us</a>
+                        <a href=". /about.html" class="hover:text-[#A25A68] transition-colors uppercase">About Us</a>
                     </nav>
                 </div>
             </div>
@@ -524,8 +524,7 @@
         }
 
         // Async REST submission routing payload directly to the Node server
-        // Replace your existing handleBooking(e) function with this browser-only pipeline
-        function handleBooking(e) {
+        async function handleBooking(e) {
             e.preventDefault();
 
             if (selectedServices.size === 0) {
@@ -533,6 +532,12 @@
                 return;
             }
 
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `Processing Securely...`;
+
+            // Package structured object states
             const baseLocation = document.getElementById('serviceLocation').value;
             const addressSpecific = document.getElementById('houseCallAddress').value.trim();
             const locationFinal = baseLocation.includes('House Call') ? `House Call: ${addressSpecific}` : baseLocation;
@@ -542,26 +547,39 @@
                 return `${matching.name} (R${matching.cost})`;
             });
 
-            const clientName = document.getElementById('clientName').value.trim();
-            const appointmentDate = document.getElementById('appointmentDate').value;
-            const specialNotes = document.getElementById('specialNotes').value.trim() || "None";
-            const totalCost = document.getElementById('priceIndicator').innerText;
+            const payloadData = {
+                clientName: document.getElementById('clientName').value.trim(),
+                appointmentDate: document.getElementById('appointmentDate').value,
+                location: locationFinal,
+                specialNotes: document.getElementById('specialNotes').value.trim(),
+                services: serviceReadableArray,
+                totalCost: document.getElementById('priceIndicator').innerText
+            };
 
-            // Construct a structured text template for the business WhatsApp
-            const messageText = `✨ *New Booking Request* ✨\n\n` +
-                `👤 *Client:* ${clientName}\n` +
-                `📅 *Date/Time:* ${appointmentDate}\n` +
-                `📍 *Location:* ${locationFinal}\n` +
-                `💇‍♀️ *Services:* \n- ${serviceReadableArray.join('\n- ')}\n\n` +
-                `📝 *Notes:* ${specialNotes}\n` +
-                `💰 *Estimated Total:* ${totalCost}`;
+            try {
+                // Transmit cleanly via Fetch API securely to Backend endpoint
+                const response = await fetch('/api/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadData)
+                });
 
-            // Target Phone number format (International format without '+' or spaces)
-            const businessPhone = "27647357201";
-            const dispatchUrl = `https://api.whatsapp.com/send?phone=${businessPhone}&text=${encodeURIComponent(messageText)}`;
+                const result = await response.json();
 
-            // Instantly handoff browser window without needing a backend API fetch
-            window.open(dispatchUrl, '_blank');
+                if (result.success) {
+                    // Safely handoff client browser to prefilled server dispatch URI
+                    window.open(result.dispatchUrl, '_blank');
+                } else {
+                    alert(`Submission issue: ${result.message}`);
+                }
+            } catch (err) {
+                console.error("Transmission Exception:", err);
+                alert("Network routing error communicating with local backend pipeline.");
+            } finally {
+                // Restore interactive element status cleanly
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         }
         // Carousel Configuration
         const galleryImages = [
